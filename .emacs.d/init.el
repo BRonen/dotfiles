@@ -23,6 +23,8 @@
 	     :config (message "Loaded Magit!")
 	     :bind ("C-x C-g" . magit-status))
 
+(use-package haskell-mode)
+
 (use-package cider)
 
 (use-package flycheck-clj-kondo)
@@ -38,9 +40,11 @@
 
 (use-package lsp-mode
 	     :init (setq lsp-keymap-prefix "C-c l")
-	     :hook ((clojure-mode-hook       . lsp)
-		    (clojurescript-mode-hook . lsp)
-		    (clojurec-mode-hook      . lsp)
+	     :hook ((clojure-mode-hook          . lsp)
+		    (clojurescript-mode-hook    . lsp)
+		    (clojurec-mode-hook         . lsp)
+		    (haskell-mode-hook          . lsp)
+                    (haskell-literate-mode-hook . lsp)
 		    ;; (lsp-mode . lsp-enable-which-key-integration)
 		    )
 	     :commands lsp)
@@ -114,5 +118,11 @@
  ;; If there is more than one, they won't work right.
  )
 
-(load-file (let ((coding-system-for-read 'utf-8))
-                (shell-command-to-string "agda-mode locate")))
+(when (executable-find "agda")
+  (load-file (let ((coding-system-for-read 'utf-8))
+               (shell-command-to-string "agda-mode locate"))))
+
+(provide 'init)
+
+;;; init.el ends here
+
