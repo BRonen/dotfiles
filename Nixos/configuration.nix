@@ -130,6 +130,7 @@
      neofetch
      ibus
      jq
+     ripgrep
      (catppuccin-gtk.override {
        variant = "mocha";
      })
