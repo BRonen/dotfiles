@@ -31,6 +31,12 @@
     LC_TIME = "pt_BR.UTF-8";
   };
 
+  nixpkgs.overlays = [
+    (import (builtins.fetchTarball {
+      url = https://github.com/nix-community/emacs-overlay/archive/master.tar.gz;
+    }))
+  ];
+
   services.xserver = {
     enable = true;
 
@@ -104,14 +110,23 @@
       spotify
       slack
       emacs
+      emacsPackages.pdf-tools
+      nerdfonts
 
       arandr
       fortune
       ponysay
       flameshot
       telegram-desktop
+      wakatime
+      obs-studio
+      obs-studio-plugins.obs-pipewire-audio-capture
     ];
   };
+
+  fonts.packages = with pkgs; [
+    monaspace
+  ];
 
   programs.steam.enable = true;
   programs.direnv.enable = true;
@@ -130,10 +145,8 @@
      neofetch
      ibus
      jq
+     unzip
      ripgrep
-     (catppuccin-gtk.override {
-       variant = "mocha";
-     })
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
