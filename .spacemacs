@@ -32,7 +32,10 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(toml
+   '(html
+     javascript
+     sql
+     toml
      haskell
      clojure
      nixos
@@ -40,6 +43,11 @@ This function should only modify configuration layer settings."
      epub
      pdf
      ivy
+     emacs-lisp
+     git
+     org
+     (version-control :variables
+                      version-control-diff-side 'left)
      (wakatime :variables
                wakatime-api-key ""
                wakatime-cli-path "")
@@ -50,16 +58,13 @@ This function should only modify configuration layer settings."
      ;; ----------------------------------------------------------------
      ;; auto-completion
      ;; better-defaults
-     emacs-lisp
-     ;; git
      ;; markdown
-     ;; org
+     ;; lsp
      ;; (shell :variables
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
      ;; spell-checking
      ;; syntax-checking
-     ;; version-control
      )
 
 
@@ -74,7 +79,11 @@ This function should only modify configuration layer settings."
    dotspacemacs-additional-packages '(direnv
                                       catppuccin-theme
                                       multiple-cursors
-                                      ripgrep)
+                                      ripgrep
+                                      move-dup
+                                      (cider-storm :local (recipe
+                                                           :fetcher github
+                                                           :repo "flow-storm/cider-storm")))
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -207,8 +216,8 @@ It should only modify the values of Spacemacs settings."
    ;; pair of numbers, e.g. `(recents-by-project . (7 .  5))', where the first
    ;; number is the project limit and the second the limit on the recent files
    ;; within a project.
-   dotspacemacs-startup-lists '((recents . 8)
-                                (projects . 4))
+   dotspacemacs-startup-lists '((recents . 5)
+                                (projects . 7))
 
    ;; True if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
@@ -577,6 +586,28 @@ dump."
   )
 
 
+(defun load-agda-mode ()
+  (interactive)
+  (when (and (stringp buffer-file-name)
+             (string-match "\\.agda\\'" buffer-file-name)
+             (executable-find "agda-mode"))
+    (load-file (let ((coding-system-for-read 'utf-8))
+                 (shell-command-to-string "agda-mode locate")))
+    (agda2-mode)))
+
+(defun cider-run-flowstorm ()
+  (interactive)
+  (cider-interactive-eval
+   "(do (require '[flow-storm.api :as fs-api])
+          (fs-api/local-connect))"))
+
+(defun cider-recording-flowstorm ()
+  (interactive)
+  (cider-interactive-eval
+   "(do (require '[flow-storm.api :as fs-api])
+               (fs-api/start-recording))"))
+
+
 (defun dotspacemacs/user-config ()
   "Configuration for user code:
 This function is called at the very end of Spacemacs startup, after layer
@@ -586,23 +617,23 @@ before packages are loaded."
   (direnv-mode)
 
   (golden-ratio-mode)
+  (global-set-key (kbd "M-o") 'ace-window)
+
+  (global-move-dup-mode)
+
+  (global-undo-tree-mode -1)
 
   (global-set-key (kbd "C->") 'mc/mark-next-like-this)
   (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
   (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
   (setq projectile-keymap-prefix (kbd "M-p"))
+  (define-key projectile-mode-map (kbd "M-p") ’projectile-command-map)
 
-  (load-theme 'catppuccin :no-confirm); (setq catppuccin-flavor 'latte)
+  (load-theme 'catppuccin :no-confirm)
 
-  (defun load-agda-mode ()
-    (interactive)
-    (when (and (stringp buffer-file-name)
-               (string-match "\\.agda\\'" buffer-file-name)
-               (executable-find "agda-mode"))
-      (load-file (let ((coding-system-for-read 'utf-8))
-                   (shell-command-to-string "agda-mode locate")))
-      (agda2-mode))))
+  (cider-add-to-alist 'cider-jack-in-dependencies
+                      "com.github.flow-storm/flow-storm-dbg" "RELEASE"))
 
 
 ;; Do Not Write Anything past this comment. This is where Emacs will
@@ -617,8 +648,14 @@ This function is called at the very end of Spacemacs initialization."
    ;; If you edit it by hand, you could mess it up, so be careful.
    ;; Your init file should contain only one such instance.
    ;; If there is more than one, they won't work right.
+   '(highlight-indent-guides-method 'character)
    '(package-selected-packages
-     '(ripgrep ligature toml-mode doom-modeline shrink-path nerd-icons spaceline-all-the-icons memoize direnv catppuccin-theme attrap company-cabal counsel-gtags counsel swiper ivy dante lcr company eldoc xref flycheck-haskell ggtags yasnippet haskell-mode lsp-mode markdown-mode evil-easymotion treemacs-evil ws-butler writeroom-mode winum which-key volatile-highlights vim-powerline vi-tilde-fringe uuidgen undo-tree treemacs-projectile treemacs-persp treemacs-icons-dired toc-org term-cursor symon symbol-overlay string-inflection string-edit-at-point spacemacs-whitespace-cleanup spacemacs-purpose-popwin spaceline space-doc restart-emacs request rainbow-delimiters quickrun popwin pcre2el password-generator paradox overseer org-superstar open-junk-file nameless multi-line macrostep lsp-haskell lorem-ipsum link-hint inspector info+ indent-guide hybrid-mode hungry-delete holy-mode hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation hide-comnt helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-org helm-mode-manager helm-make helm-hoogle helm-descbinds helm-comint helm-ag haskell-snippets google-translate golden-ratio flycheck-package flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-evilified-state evil-escape evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu emr elisp-slime-nav elisp-demos elisp-def editorconfig dumb-jump drag-stuff dotenv-mode dired-quick-sort diminish devdocs define-word column-enforce-mode cmm-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile all-the-icons aggressive-indent ace-link ace-jump-helm-line)))
+     '(evil-org gnuplot org-cliplink org-contrib org-download org-mime org-pomodoro alert log4e gntp org-present org-projectile org-project-capture org-category-capture org-rich-yank orgit-forge orgit compat auto-yasnippet clojure-snippets company-nixos-options flycheck-pos-tip pos-tip highlight-indent-guides ivy-yasnippet lsp-ivy lsp-origami origami lsp-ui yasnippet-snippets company-web web-completion-data counsel-css emmet-mode helm-css-scss helm wfnames helm-core pug-mode sass-mode haml-mode scss-mode slim-mode tagedit web-mode add-node-modules-path dap-mode lsp-docker lsp-treemacs bui impatient-mode htmlize import-js grizzl js-doc js2-refactor livid-mode nodejs-repl npm-mode prettier-js skewer-mode js2-mode simple-httpd tern web-beautify browse-at-remote diff-hl forge yaml ghub closql emacsql treepy git-link git-messenger git-modes git-timemachine gitignore-templates smeargle treemacs-magit magit magit-section git-commit with-editor transient dash sql-indent sqlup-mode move-dup ripgrep ligature toml-mode doom-modeline shrink-path nerd-icons spaceline-all-the-icons memoize direnv catppuccin-theme attrap company-cabal counsel-gtags counsel swiper ivy dante lcr company eldoc xref flycheck-haskell ggtags yasnippet haskell-mode lsp-mode markdown-mode evil-easymotion treemacs-evil ws-butler writeroom-mode winum which-key volatile-highlights vim-powerline vi-tilde-fringe uuidgen undo-tree treemacs-projectile treemacs-persp treemacs-icons-dired toc-org term-cursor symon symbol-overlay string-inflection string-edit-at-point spacemacs-whitespace-cleanup spacemacs-purpose-popwin spaceline space-doc restart-emacs request rainbow-delimiters quickrun popwin pcre2el password-generator paradox overseer org-superstar open-junk-file nameless multi-line macrostep lsp-haskell lorem-ipsum link-hint inspector info+ indent-guide hybrid-mode hungry-delete holy-mode hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation hide-comnt helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-org helm-mode-manager helm-make helm-hoogle helm-descbinds helm-comint helm-ag haskell-snippets google-translate golden-ratio flycheck-package flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-evilified-state evil-escape evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu emr elisp-slime-nav elisp-demos elisp-def editorconfig dumb-jump drag-stuff dotenv-mode dired-quick-sort diminish devdocs define-word column-enforce-mode cmm-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile all-the-icons aggressive-indent ace-link ace-jump-helm-line))
+   '(safe-local-variable-values
+     '((display-line-numbers-width . 3)
+       (javascript-backend . tide)
+       (javascript-backend . tern)
+       (javascript-backend . lsp))))
   (custom-set-faces
    ;; custom-set-faces was added by Custom.
    ;; If you edit it by hand, you could mess it up, so be careful.
