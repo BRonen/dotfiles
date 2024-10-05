@@ -75,9 +75,13 @@ index = 17
 color = "#f4dbd6"
 
 [font]
-normal = { family = "Monaspace Neon", style = "Regular" }
-bold = { family = "Monaspace Neon", style = "Bold" }
-italic = { family = "Monaspace Neon", style = "Italic" }
-bold_italic = { family = "Monaspace Neon", style = "Bold Italic" }
+normal = { family = "MonaspiceKr Nerd Font Mono", style = "Regular" }
+bold = { family = "MonaspiceKr Nerd Font Mono", style = "Bold" }
+italic = { family = "MonaspiceKr Nerd Font Mono", style = "Italic" }
+bold_italic = { family = "MonaspiceKr Nerd Font Mono", style = "Bold Italic" }
 
 size = 12.0
+
+[shell]
+program = "/home/bronen/.nix-profile/bin/bash"
+

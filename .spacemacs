@@ -34,6 +34,7 @@ This function should only modify configuration layer settings."
    dotspacemacs-configuration-layers
    '(html
      javascript
+     markdown
      sql
      toml
      haskell
@@ -58,7 +59,6 @@ This function should only modify configuration layer settings."
      ;; ----------------------------------------------------------------
      ;; auto-completion
      ;; better-defaults
-     ;; markdown
      ;; lsp
      ;; (shell :variables
      ;;        shell-default-height 30
@@ -622,6 +622,8 @@ before packages are loaded."
   (global-move-dup-mode)
 
   (global-undo-tree-mode -1)
+
+  (add-to-list 'auto-mode-alist '("\\.astro\\'" . web-mode))
 
   (global-set-key (kbd "C->") 'mc/mark-next-like-this)
   (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
