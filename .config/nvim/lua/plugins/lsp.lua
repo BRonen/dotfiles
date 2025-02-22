@@ -39,6 +39,7 @@ return {
     require('lspconfig').clangd.setup({})
     require('lspconfig').clojure_lsp.setup({})
     require('lspconfig').agda_ls.setup({})
+    require('lspconfig').jdtls.setup({})
 
     local cmp = require('cmp')
     local cmp_action = require('lsp-zero').cmp_action()
