@@ -1,8 +1,18 @@
+# Edit this configuration file to define what should be installed on
+# your system.  Help is available in the configuration.nix(5) man page
+# and in the NixOS manual (accessible by running ‘nixos-help’).
+
 { config, pkgs, ... }:
 
 {
-  imports = [./hardware-configuration.nix];
+  imports =
+    [ # Include the results of the hardware scan.
+      ./hardware-configuration.nix
+    ];
 
+  nixpkgs.config.allowUnfree = true;
+
+  # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
@@ -13,10 +23,13 @@
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
+  # Enable networking
   networking.networkmanager.enable = true;
 
+  # Set your time zone.
   time.timeZone = "America/Sao_Paulo";
 
+  # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
 
   i18n.extraLocaleSettings = {
@@ -31,26 +44,17 @@
     LC_TIME = "pt_BR.UTF-8";
   };
 
-  nixpkgs.overlays = [
-    (import (builtins.fetchTarball {
-      url = https://github.com/nix-community/emacs-overlay/archive/master.tar.gz;
-    }))
-  ];
-
   services.xserver = {
     enable = true;
-
-    layout = "br";
-    xkbVariant = "nodeadkeys";
 
     desktopManager = {
       gnome.enable = true;
       xterm.enable = false;
     };
-   
+
     displayManager = {
-        gdm.enable = true;
-        defaultSession = "none+i3";
+      gdm.enable = true;
+      defaultSession = "none+i3";
     };
 
     windowManager.i3 = {
@@ -61,13 +65,20 @@
         i3lock
       ];
     };
+
+    xkb = {
+      layout = "us";
+      variant = "alt-intl";
+    };
   };
 
+  # Configure console keymap
   console.keyMap = "br-abnt2";
 
+  # Enable CUPS to print documents.
   services.printing.enable = true;
 
-  sound.enable = true;
+  # Enable sound with pipewire.
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -86,68 +97,44 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  hardware.bluetooth = {
-    enable = true;
-    powerOnBoot = true;
-  };
-
-  virtualisation.docker.enable = true;
-  virtualisation.docker.rootless = {
-    enable = true;
-    setSocketVariable = true;
-  };
-
+  # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.bronen = {
     isNormalUser = true;
-    description = "";
-    extraGroups = [ "networkmanager" "wheel" "docker"];
-    packages = with pkgs; [
-      firefox
-      chromium
-      discord
-      bitwarden
-      vscode
-      spotify
-      slack
-      emacs
-      emacsPackages.pdf-tools
-      nerdfonts
-
-      arandr
-      fortune
-      ponysay
-      flameshot
-      telegram-desktop
-      wakatime
-      obs-studio
-      obs-studio-plugins.obs-pipewire-audio-capture
-    ];
+    description = "Brenno Rodrigues";
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
   };
 
-  fonts.packages = with pkgs; [
-    monaspace
-  ];
+  programs = {
+    firefox.enable = true;
+    steam.enable = true;
+    neovim = {
+      enable = true;
+      defaultEditor = true;
+    };
+    obs-studio = {
+      enable = true;
+      plugins = with pkgs.obs-studio-plugins; [];
+    };
+  };
 
-  programs.steam.enable = true;
-  programs.direnv.enable = true;
-  nixpkgs.config.allowUnfree = true;
+  virtualisation.docker = {
+    enable = true;
+    rootless = {
+      enable = true;
+      setSocketVariable = true;
+    };
+  };
+
+  fonts.packages = with pkgs; [ monaspace ];
+
+  # List packages installed in system profile. To search, run:
+  # $ nix search wget
+  environment.systemPackages = with pkgs; [
+    nerdfonts
+    neofetch
+  ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
-  environment.systemPackages = with pkgs; [
-     vim
-     git
-     steam
-     curl
-     catppuccin
-     lxappearance
-     alacritty
-     neofetch
-     ibus
-     jq
-     unzip
-     ripgrep
-  ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -174,6 +161,6 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "23.11"; # Did you read the comment?
+  system.stateVersion = "24.11"; # Did you read the comment?
 
 }

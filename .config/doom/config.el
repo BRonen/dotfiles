@@ -21,8 +21,8 @@
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 ;;
-;;(setq doom-font (font-spec :family "Fira Code" :size 12 :weight 'semi-light)
-;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
+(setq doom-font (font-spec :family "MonaspiceKr Nerd Font Mono" :size 22 :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "MonaspiceKr Nerd Font Mono" :size 24))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -138,3 +138,11 @@
 
 (map! "M-p" #'+ivy/project-search
       "M-o" #'+ivy/switch-buffer)
+
+; (use-package! copilot
+;  :hook (prog-mode . copilot-mode)
+;  :bind (:map copilot-completion-map
+;              ("C-<tab>" . 'copilot-accept-completion)
+;              ("C-TAB" . 'copilot-accept-completion)
+;              ("C-S-TAB" . 'copilot-accept-completion-by-word)
+;              ("C-S-<tab>" . 'copilot-accept-completion-by-word)))
