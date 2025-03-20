@@ -28,6 +28,7 @@ return {
       "astro",
       "bash",
       "c",
+      "commonlisp",
       "clojure",
       "diff",
       "haskell",
