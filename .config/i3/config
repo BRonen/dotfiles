@@ -215,6 +215,7 @@ set $crust     #11111b
 # finds out, if available)
 bar {
   status_command i3status
+
   colors {
     background         $base
     statusline         $text
@@ -237,4 +238,3 @@ client.placeholder       $overlay0 $base $text  $overlay0  $overlay0
 client.background        $base
 
 for_window [class="^.*"] border pixel 0
-
