@@ -1,19 +1,6 @@
 { pkgs, lib, ... }: {
   nixpkgs.config.allowUnfree = true;
 
-  home = {
-    username = "bronen";
-    homeDirectory = "/home/bronen";
-  };
-
-  home.packages = with pkgs; [
-    telegram-desktop discord slack
-    xclip fortune ponysay
-    code-cursor
-    bitwarden
-    spotify
-  ];
-
   xsession.windowManager.i3 = {
     enable = true;
     config = let
@@ -108,6 +95,10 @@
 
   programs.bash = {
     enable = true;
+    shellAliases = {
+      ll = "ls -l --color";
+      la = "ls -las --color";
+    };
     initExtra = ''
           . "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
         '';
@@ -128,16 +119,39 @@
     viAlias = true;
   };
 
+  programs.git = {
+    enable = true;
+    userName = "BRonen";
+    userEmail = "brennopereira6@gmail.com";
+  };
+
+  home.packages = with pkgs; [
+    telegram-desktop discord slack
+    xclip fortune ponysay flameshot
+    code-cursor
+    bitwarden
+    spotify
+  ];
+
   home.sessionVariables = {
     EDITOR = "nvim";
     TERMINAL = "kitty";
     TERM = "kitty";
   };
 
-  programs.git = {
-    enable = true;
-    userName = "BRonen";
-    userEmail = "brennopereira6@gmail.com";
+  home = {
+    username = "bronen";
+    homeDirectory = "/home/bronen";
+    file."wasdwasd" = {
+      target = ".config/doom";
+      source = ../doom;
+      recursive = true;
+    };
+    file."wasdwasdw" = {
+      target = ".config/nvim";
+      source = ../nvim;
+      recursive = true;
+    };
   };
 
   home.stateVersion = "24.11";
