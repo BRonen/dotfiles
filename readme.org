@@ -1,0 +1,19 @@
+* Dotfiles
+
+Intended for personal use only, don't expect it to work.
+
+** Switching home-manager config
+
+#+BEGIN_SRC sh
+
+home-manager --flake .#bronen@nixos switch
+
+#+END_SRC
+
+** Switching nixos configuration
+
+#+BEGIN_SRC sh
+
+sudo nixos-rebuild --flake .#nixos switch --impure
+
+#+END_SRC

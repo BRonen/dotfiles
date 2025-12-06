@@ -25,6 +25,7 @@
         "XF86AudioLowerVolume" = "exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status";
         "XF86AudioMute" = "exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status";
         "XF86AudioMicMute" = "exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status";
+        "Print" = "exec --no-startup-id flameshot gui";
       };
     };
   };
@@ -55,7 +56,7 @@
     enable = true;
     font = {
       name = "MonaspiceKr Nerd Font Mono";
-      size = 14;
+      size = 16;
     };
     settings = {
       confirm_os_window_close = 0;
@@ -64,7 +65,7 @@
       mouse_hide_wait = "-1.0";
       window_padding_width = 10;
       background_blur = 0;
-      background_image = "~/Pictures/kitty-wallpaper.jpg";
+      background_image = "~/Pictures/background_kitty.gif";
       background_image_layout = "cscaled";
       background_tint = "0.99";
       symbol_map = let
@@ -100,8 +101,8 @@
       la = "ls -las --color";
     };
     initExtra = ''
-          . "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
-        '';
+      . "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+    '';
   };
 
   programs.direnv = {
@@ -121,15 +122,17 @@
 
   programs.git = {
     enable = true;
-    userName = "BRonen";
-    userEmail = "brennopereira6@gmail.com";
+    settings.user = {
+      name = "BRonen";
+      email = "brennopereira6@gmail.com";
+    };
   };
 
   home.packages = with pkgs; [
-    telegram-desktop discord slack
+    telegram-desktop signal-desktop
+    discord slack
     xclip fortune ponysay flameshot
-    code-cursor
-    bitwarden
+    bitwarden-desktop
     spotify
   ];
 
@@ -142,17 +145,17 @@
   home = {
     username = "bronen";
     homeDirectory = "/home/bronen";
-    file."wasdwasd" = {
+    file."doom" = {
       target = ".config/doom";
       source = ../doom;
       recursive = true;
     };
-    file."wasdwasdw" = {
+    file."nvim" = {
       target = ".config/nvim";
       source = ../nvim;
       recursive = true;
     };
   };
 
-  home.stateVersion = "24.11";
+  home.stateVersion = "25.11";
 }

@@ -51,6 +51,7 @@
 (package! zoom)
 (package! drag-stuff)
 (package! wakatime-mode)
+(package! elcord)
 
 (package! lean4-mode
   :recipe (:host github

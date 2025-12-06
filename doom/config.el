@@ -138,6 +138,10 @@
   :defer 3
   :config (global-wakatime-mode))
 
+(use-package! elcord
+  :defer  t
+  :config (elcord-mode))
+
 (map! "M-p" #'+ivy/project-search
       "M-o" #'+ivy/switch-buffer)
 

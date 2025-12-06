@@ -114,6 +114,9 @@
     };
   };
 
+  virtualisation.virtualbox.host.enable = true;
+  users.extraGroups.vboxusers.members = [ "bronen" ];
+
   virtualisation.docker = {
     enable = true;
     rootless = {
@@ -122,12 +125,17 @@
     };
   };
 
-  fonts.packages = with pkgs; [ monaspace ];
+  fonts.packages = with pkgs; [
+    nerd-fonts.monaspace
+    nerd-fonts.fira-code
+
+    nerd-fonts.symbols-only
+  ];
 
   environment.systemPackages = with pkgs; [
-    nerdfonts
     neofetch
     ripgrep
+    via
   ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -151,5 +159,5 @@
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
-  system.stateVersion = "24.11";
+  system.stateVersion = "25.11";
 }
