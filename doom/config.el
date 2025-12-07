@@ -20,10 +20,15 @@
 ;;
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
-;;
-(setq doom-font (font-spec :family "MonaspiceKr Nerd Font Mono" :size 22 :weight 'semi-light)
-      doom-variable-pitch-font (font-spec :family "MonaspiceKr Nerd Font Mono" :size 24))
-;;
+
+(pcase (getenv "USER")
+  ("brenno.rodrigues"
+   (setq doom-font (font-spec :family "MonaspiceKr Nerd Font Mono" :size 42)
+         doom-variable-pitch-font (font-spec :family "MonaspiceKr Nerd Font Mono" :size 44 :weight 'bold)))
+  (_
+   (setq doom-font (font-spec :family "MonaspiceKr Nerd Font Mono" :size 22)
+         doom-variable-pitch-font (font-spec :family "MonaspiceKr Nerd Font Mono" :size 24 :weight 'bold))))
+
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
 ;; refresh your font settings. If Emacs still can't find your font, it likely
@@ -92,8 +97,9 @@
         cider-eldoc-display-for-symbol-at-point nil
         cider-prompt-for-symbol nil
         cider-use-xref nil
-
-        cider-repl-pop-to-buffer-on-connect nil
+        cider-repl-pop-to-buffer-on-connect 'display-only
+        cider-repl-display-in-current-window nil
+        cider-repl-result-prefix ";; => "
         clojure-enable-kaocha-runner t
         cider-repl-display-help-banner nil
         cider-print-fn 'puget
@@ -103,23 +109,20 @@
         cider-repl-history-size 64)
 
   (set-lookup-handlers! '(cider-mode cider-repl-mode) nil)
-  (set-popup-rule! "*cider-test-report*"
-    :side 'bottom
-    :height 0.3)
-  (set-popup-rule! "^\\*cider-repl"
-    :side 'right
-    :width 0.5)
+  (set-popup-rule! "*cider-test-report*" :ignore t)
+  (set-popup-rule! "^\\*cider-repl" :ignore t)
 
-  (add-hook 'cider-mode-hook
-            (lambda ()
-              (remove-hook 'completion-at-point-functions
-                           #'cider-complete-at-point))))
+  ;; (add-hook 'cider-mode-hook
+  ;;           (lambda ()
+  ;;             (remove-hook 'completion-at-point-functions
+  ;;                          #'cider-complete-at-point)))
+  )
 
 (use-package zoom
   :hook   (doom-first-input . zoom-mode)
   :init   (map! "C->" #'mc/mark-next-like-this
                 "C-<" #'mc/mark-previous-like-this)
-  :config (setq zoom-size '(0.6 . 0.8)))
+  :config (setq zoom-size '(0.75)))
 
 (use-package! drag-stuff
   :defer t
@@ -128,27 +131,17 @@
                "<M-left>"  #'drag-stuff-left
                "<M-right>" #'drag-stuff-right))
 
-; (use-package lean4-mode
-;   :commands lean4-mode
-;   :straight (lean4-mode :type git :host github
-;                         :repo "leanprover-community/lean4-mode"
-;                         :files ("*.el" "data")))
-
 (use-package! wakatime-mode
   :defer 3
   :config (global-wakatime-mode))
 
-(use-package! elcord
-  :defer  t
-  :config (elcord-mode))
+(when (string= "bronen" (getenv "USER"))
+  (use-package! elcord
+    :defer  t
+    :config (elcord-mode)))
 
-(map! "M-p" #'+ivy/project-search
-      "M-o" #'+ivy/switch-buffer)
 
-; (use-package! copilot
-;  :hook (prog-mode . copilot-mode)
-;  :bind (:map copilot-completion-map
-;              ("C-<tab>" . 'copilot-accept-completion)
-;              ("C-TAB" . 'copilot-accept-completion)
-;              ("C-S-TAB" . 'copilot-accept-completion-by-word)
-;              ("C-S-<tab>" . 'copilot-accept-completion-by-word)))
+(map! "M-p" #'+vertico/project-search
+      "M-o" #'+vertico/switch-workspace-buffer
+      "C-s" #'+vertico/search-symbol-at-point)
+

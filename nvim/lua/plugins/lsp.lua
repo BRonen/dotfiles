@@ -2,8 +2,6 @@ return {
   'VonHeikemen/lsp-zero.nvim',
   branch = 'v4.x',
   dependencies = {
-    -- {'williamboman/mason.nvim'},
-    -- {'williamboman/mason-lspconfig.nvim'},
     {'neovim/nvim-lspconfig'},
     {'hrsh7th/cmp-nvim-lsp'},
     {'hrsh7th/nvim-cmp'},
@@ -32,14 +30,14 @@ return {
       capabilities = require('cmp_nvim_lsp').default_capabilities(),
     })
 
-    require('lspconfig').lua_ls.setup({
+    vim.lsp.config.lua_ls = {
       on_init = function(client) lsp_zero.nvim_lua_settings(client, {}) end,
-    })
-    require('lspconfig').hls.setup({})
-    require('lspconfig').clangd.setup({})
-    require('lspconfig').clojure_lsp.setup({})
-    require('lspconfig').agda_ls.setup({})
-    require('lspconfig').jdtls.setup({})
+    }
+    vim.lsp.config.hls = {}
+    vim.lsp.config.clangd = {}
+    vim.lsp.config.clojure_lsp = {}
+    vim.lsp.config.agda_ls = {}
+    vim.lsp.config.jdtls = {}
 
     local cmp = require('cmp')
     local cmp_action = require('lsp-zero').cmp_action()

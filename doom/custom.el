@@ -20,3 +20,62 @@
     (load-file (let ((coding-system-for-read 'utf-8))
                  (shell-command-to-string "agda-mode locate")))
     (agda2-mode)))
+
+(add-to-list 'auto-mode-alist '("\\.astro\\'" . web-mode))
+
+;; literate babel org mode setup
+
+(require 'ob)
+(require 'ob-ref)
+(require 'ob-comint)
+(require 'ob-eval)
+
+(add-to-list 'org-babel-tangle-lang-exts '("lean4" . "lean"))
+
+;; optionally declare default header arguments for this language
+(defvar org-babel-default-header-args:lean4 '())
+
+(defun org-babel-expand-body:lean4 (body params &optional processed-params)
+  "Expand BODY according to PARAMS, return the expanded body."
+  (require 'inf-lean4 nil t)
+  (let ((vars (org-babel--get-vars (or processed-params (org-babel-process-params params)))))
+    (concat
+     (mapconcat ;; define any variables
+      (lambda (pair)
+        (format "%s=%S"
+                (car pair) (org-babel-lean4-var-to-lean4 (cdr pair))))
+      vars "\n")
+     "\n" body "\n")))
+
+(defun org-babel-execute:lean4 (body params)
+  "Execute a block of lean4 code with org-babel.
+This function is called by `org-babel-execute-src-block'"
+    (let ((in-file (org-babel-temp-file "l" ".lean"))
+          (verbosity (or (cdr (assq :verbosity params)) 0)))
+      (with-temp-file in-file
+        (insert body))
+      (org-babel-eval
+       (format "lean %s" (org-babel-process-file-name in-file))
+       "")))
+
+(defun org-babel-prep-session:lean4 (session params)
+  "Prepare SESSION according to the header arguments specified in PARAMS."
+  )
+
+(defun org-babel-lean4-var-to-lean4 (var)
+  "Convert an elisp var into a string of lean4 source code
+specifying a var of the same value."
+  (format "%S" var))
+
+(defun org-babel-lean4-table-or-string (results)
+  "If the results look like a table, then convert them into an
+Emacs-lisp table, otherwise return the results as a string."
+  )
+
+(defun org-babel-lean4-initiate-session (&optional session)
+  "If there is not a current inferior-process-buffer in SESSION then create.
+Return the initialized session."
+  (unless (string= session "none")
+    ))
+
+(setq org-support-shift-select 't)

@@ -25,6 +25,11 @@
           extraSpecialArgs = { inherit inputs outputs; };
           modules = [ ./home-manager/bronen.nix ];
         };
+        "brenno.rodrigues@ubuntu" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.x86_64-linux;
+          extraSpecialArgs = { inherit inputs outputs; };
+          modules = [ ./home-manager/brenno.rodrigues.nix ];
+        };
       };
     } // flake-utils.lib.eachSystem [ "x86_64-linux" "x86_64-darwin" "i686-linux" ] (system:
       let
