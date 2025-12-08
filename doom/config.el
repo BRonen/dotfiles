@@ -21,13 +21,30 @@
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 
-(pcase (getenv "USER")
-  ("brenno.rodrigues"
-   (setq doom-font (font-spec :family "MonaspiceKr Nerd Font Mono" :size 42)
-         doom-variable-pitch-font (font-spec :family "MonaspiceKr Nerd Font Mono" :size 44 :weight 'bold)))
-  (_
-   (setq doom-font (font-spec :family "MonaspiceKr Nerd Font Mono" :size 22)
-         doom-variable-pitch-font (font-spec :family "MonaspiceKr Nerd Font Mono" :size 24 :weight 'bold))))
+(setq doom-font (font-spec :family "MonaspiceKr Nerd Font Mono")
+      doom-variable-pitch-font (font-spec :family "MonaspiceKr Nerd Font Mono" :weight 'bold))
+
+(defun bronen/font-size-update (&optional _)
+  (interactive)
+  (let* ((geom (frame-monitor-geometry))
+         (right (nth 2 geom)))
+    (cond
+     ((< right 1000)
+      (set-face-attribute 'default nil :height 100)
+      (set-face-attribute 'variable-pitch nil :height 120))
+     ((< right 2000)
+      (set-face-attribute 'default nil :height 150)
+      (set-face-attribute 'variable-pitch nil :height 170))
+     ((< right 3000)
+      (set-face-attribute 'default nil :height 200)
+      (set-face-attribute 'variable-pitch nil :height 220))
+     (t
+      (set-face-attribute 'default nil :height 250)
+      (set-face-attribute 'variable-pitch nil :height 270)))))
+
+(add-hook 'after-make-frame-functions #'bronen/font-size-update)
+(add-hook 'window-size-change-functions #'bronen/font-size-update)
+(add-hook 'after-setting-font-hook #'bronen/font-size-update)
 
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
