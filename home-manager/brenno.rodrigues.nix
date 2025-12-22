@@ -53,12 +53,19 @@
   };
 
   home.packages = with pkgs; [
-    discord slack neofetch
+    discord
+    slack
+    spotify
+    neofetch
     bitwarden-desktop
-    wakatime-cli spotify
+    wakatime-cli
     nerd-fonts.symbols-only
     nerd-fonts.monaspace
-    jq jet ripgrep xclip
+    mermaid-cli
+    ripgrep
+    xclip
+    jet
+    jq
   ];
 
   home = {

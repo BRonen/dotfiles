@@ -36,7 +36,15 @@
         pkgs = import nixpkgs { inherit system; };
       in {
         devShell = pkgs.mkShell {
-          buildInputs = [ pkgs.lua-language-server pkgs.home-manager ];
+          buildInputs = [
+            pkgs.lua-language-server
+
+            pkgs.copilot-language-server
+            pkgs.nodejs
+            pkgs.python3
+            
+            pkgs.home-manager
+          ];
         };
       }
     );

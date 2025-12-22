@@ -129,11 +129,17 @@
   };
 
   home.packages = with pkgs; [
-    telegram-desktop signal-desktop
-    discord slack
-    xclip fortune ponysay flameshot
+    telegram-desktop
+    signal-desktop
+    discord
+    slack
+    xclip
+    flameshot
     bitwarden-desktop
     spotify
+
+    mermaid-cli
+    copilot-language-server
   ];
 
   home.sessionVariables = {
