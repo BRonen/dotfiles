@@ -135,7 +135,7 @@
   ;;                          #'cider-complete-at-point)))
   )
 
-(use-package zoom
+(use-package! zoom
   :hook   (doom-first-input . zoom-mode)
   :init   (map! "C->" #'mc/mark-next-like-this
                 "C-<" #'mc/mark-previous-like-this)
@@ -157,8 +157,19 @@
     :defer  t
     :config (elcord-mode)))
 
+(use-package! ob-mermaid
+  :defer t)
 
 (map! "M-p" #'+vertico/project-search
-      "M-o" #'+vertico/switch-workspace-buffer
+      ;; "M-o" #'+vertico/switch-workspace-buffer
       "C-s" #'+vertico/search-symbol-at-point)
+
+(use-package! copilot
+  :hook   (prog-mode . copilot-mode)
+  :config (setq copilot-idle-delay 0.5)
+  :bind   (:map copilot-completion-map
+                ("M-o"     . 'copilot-accept-completion)
+                ("C-TAB"   . 'copilot-accept-completion-by-word)
+                ("C-<tab>" . 'copilot-accept-completion-by-word)))
+
 
