@@ -152,13 +152,30 @@
   :defer 3
   :config (global-wakatime-mode))
 
-(when (string= "bronen" (getenv "USER"))
-  (use-package! elcord
-    :defer  t
-    :config (elcord-mode)))
-
-
 (map! "M-p" #'+vertico/project-search
       "M-o" #'+vertico/switch-workspace-buffer
       "C-s" #'+vertico/search-symbol-at-point)
 
+(after! kotlin-mode
+  (setq flycheck-checkers '(kotlin-ktlint))
+  (add-hook 'before-save-hook #'ktlint-fix nil t))
+
+(after! lsp-mode
+  (setq lsp-enable-symbol-highlighting nil
+        lsp-enable-links nil
+        lsp-enable-snippet nil
+        lsp-enable-folding nil
+        lsp-enable-on-type-formatting nil
+        lsp-enable-indentation nil
+        lsp-signature-auto-activate nil
+        lsp-semantic-tokens-enable nil
+        lsp-file-watch-threshold 2000
+        lsp-enable-file-watchers nil))
+
+(add-to-list 'auto-mode-alist '("\.qnt\'" . quint-mode))
+
+(use-package! lsp-quint
+  :commands (lsp-quint)
+  :init (require 'lsp-quint))
+
+(add-hook 'quint-mode-hook #'lsp!)

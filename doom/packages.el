@@ -53,7 +53,14 @@
 (package! wakatime-mode)
 (package! elcord)
 
+(package! ob-mermaid)
+
 (package! lean4-mode
   :recipe (:host github
            :repo "leanprover-community/lean4-mode"
            :files ("*.el" "data")))
+
+(package! lsp-quint
+  :recipe (:host github
+           :repo "informalsystems/quint"
+           :files ("editor-plugins/emacs/lsp-quint.el")))
