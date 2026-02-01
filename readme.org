@@ -10,10 +10,18 @@ home-manager --flake .#bronen@nixos switch
 
 #+END_SRC
 
-** Switching nixos configuration
+** Switching nixos config
 
 #+BEGIN_SRC sh
 
 sudo nixos-rebuild --flake .#nixos switch --impure
+
+#+END_SRC
+
+** Switching nix-darwin config
+
+#+BEGIN_SRC sh
+
+sudo darwin-rebuild switch --flake .
 
 #+END_SRC

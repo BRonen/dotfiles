@@ -1,12 +1,15 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    home-manager.url = "github:nix-community/home-manager/release-25.11";
+    home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    nix-darwin.url = "github:nix-darwin/nix-darwin/master";
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
   };
 
-  outputs = { self, nixpkgs, flake-utils, home-manager } @ inputs:
+  outputs = { self, nixpkgs, flake-utils, nix-darwin, nix-homebrew, home-manager } @ inputs:
     let
       inherit (self) outputs;
     in {
@@ -17,6 +20,33 @@
             ./nixos/configuration.nix
           ];
         };
+      };
+
+      darwinConfigurations."yggdrasil" = nix-darwin.lib.darwinSystem {
+        specialArgs = { inherit self; };
+        modules = [
+          ./darwin/bronen.nix
+
+          {
+            nixpkgs.hostPlatform = "aarch64-darwin";
+            nixpkgs.config.allowUnfree = true;
+          }
+
+          nix-homebrew.darwinModules.nix-homebrew {
+            nix-homebrew = {
+              enable = true;
+              enableRosetta = true;
+              user = "bronen";
+              autoMigrate = true;
+            };
+          }
+
+          home-manager.darwinModules.home-manager {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users."bronen" = import ./home-manager/yggdrasil.nix;
+          }
+        ];
       };
 
       homeConfigurations = {
@@ -31,7 +61,7 @@
           modules = [ ./home-manager/brenno.rodrigues.nix ];
         };
       };
-    } // flake-utils.lib.eachSystem [ "x86_64-linux" "x86_64-darwin" "i686-linux" ] (system:
+    } // flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
       in {
