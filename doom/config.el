@@ -135,7 +135,7 @@
   ;;                          #'cider-complete-at-point)))
   )
 
-(use-package zoom
+(use-package! zoom
   :hook   (doom-first-input . zoom-mode)
   :init   (map! "C->" #'mc/mark-next-like-this
                 "C-<" #'mc/mark-previous-like-this)
@@ -160,17 +160,17 @@
   (setq flycheck-checkers '(kotlin-ktlint))
   (add-hook 'before-save-hook #'ktlint-fix nil t))
 
-(after! lsp-mode
-  (setq lsp-enable-symbol-highlighting nil
-        lsp-enable-links nil
-        lsp-enable-snippet nil
-        lsp-enable-folding nil
-        lsp-enable-on-type-formatting nil
-        lsp-enable-indentation nil
-        lsp-signature-auto-activate nil
-        lsp-semantic-tokens-enable nil
-        lsp-file-watch-threshold 2000
-        lsp-enable-file-watchers nil))
+;; (after! lsp-mode
+;;   (setq lsp-enable-symbol-highlighting nil
+;;         lsp-enable-links nil
+;;         lsp-enable-snippet nil
+;;         lsp-enable-folding nil
+;;         lsp-enable-on-type-formatting nil
+;;         lsp-enable-indentation nil
+;;         lsp-signature-auto-activate nil
+;;         lsp-semantic-tokens-enable t
+;;         lsp-file-watch-threshold 2000
+;;         lsp-enable-file-watchers t))
 
 (add-to-list 'auto-mode-alist '("\.qnt\'" . quint-mode))
 
@@ -189,3 +189,143 @@
   (lsp-ui-doc-delay 0.2)
   (lsp-ui-doc-show-with-cursor t)
   (lsp-ui-doc-show-with-mouse nil))
+
+(after! svelte-mode
+  (setq svelte-basic-offset 4))
+
+(setq-default js-indent-level 4
+	      typescript-indent-level 4
+	      css-indent-offset 4)
+
+(setq-default indent-tabs-mode t)
+(setq-default tab-width 4)
+
+;; (use-package! lsp-vtsls
+;;   :after lsp-mode
+;;   :config (setq lsp-eldoc-render-all t
+;; 		;; https://github.com/yioneko/vtsls#bad-performance-of-completion
+;; 		lsp-vtsls-server-side-fuzzy-match t
+;; 		lsp-vtsls-entries-limit 10))
+
+(after! rust-mode
+  (add-to-list 'major-mode-remap-alist '(rust-mode . rust-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode)))
+
+;; (use-package! jinx
+;;  :hook ((text-mode . jinx-mode)
+;;         (markdown-mode . jinx-mode)
+;;         (org-mode . jinx-mode)
+;;         (git-commit-mode . jinx-mode))
+;;  :config (map! :leader
+;;		:desc "Correct spelling" "s c" #'jinx-correct))
+
+(defun bronen/load-agda-mode ()
+  (interactive)
+  (when (and (stringp buffer-file-name)
+             (string-match "\\.agda\\'" buffer-file-name)
+             (executable-find "agda-mode"))
+    (load-file (let ((coding-system-for-read 'utf-8))
+                 (shell-command-to-string "agda-mode locate")))
+    (agda2-mode)))
+
+(add-to-list 'auto-mode-alist '("\\.astro\\'" . web-mode))
+
+(after! typescript-mode
+  (add-to-list 'major-mode-remap-alist '(typescript-mode . typescript-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode)))
+
+;; literate babel org mode setup
+
+(require 'ob)
+(require 'ob-ref)
+(require 'ob-comint)
+(require 'ob-eval)
+
+(add-to-list 'org-babel-tangle-lang-exts '("lean4" . "lean"))
+
+;; optionally declare default header arguments for this language
+(defvar org-babel-default-header-args:lean4 '())
+
+(defun org-babel-expand-body:lean4 (body params &optional processed-params)
+  "Expand BODY according to PARAMS, return the expanded body."
+  (require 'inf-lean4 nil t)
+  (let ((vars (org-babel--get-vars (or processed-params (org-babel-process-params params)))))
+    (concat
+     (mapconcat ;; define any variables
+      (lambda (pair)
+        (format "%s=%S"
+                (car pair) (org-babel-lean4-var-to-lean4 (cdr pair))))
+      vars "\n")
+     "\n" body "\n")))
+
+(defun org-babel-execute:lean4 (body params)
+  "Execute a block of lean4 code with org-babel.
+This function is called by `org-babel-execute-src-block'"
+    (let ((in-file (org-babel-temp-file "l" ".lean"))
+          (verbosity (or (cdr (assq :verbosity params)) 0)))
+      (with-temp-file in-file
+        (insert body))
+      (org-babel-eval
+       (format "lean %s" (org-babel-process-file-name in-file))
+       "")))
+
+(defun org-babel-prep-session:lean4 (session params)
+  "Prepare SESSION according to the header arguments specified in PARAMS."
+  )
+
+(defun org-babel-lean4-var-to-lean4 (var)
+  "Convert an elisp var into a string of lean4 source code
+specifying a var of the same value."
+  (format "%S" var))
+
+(defun org-babel-lean4-table-or-string (results)
+  "If the results look like a table, then convert them into an
+Emacs-lisp table, otherwise return the results as a string."
+  )
+
+(defun org-babel-lean4-initiate-session (&optional session)
+  "If there is not a current inferior-process-buffer in SESSION then create.
+Return the initialized session."
+  (unless (string= session "none")
+    ))
+
+(setq org-support-shift-select 't)
+
+;; Quint Mode
+
+(defconst quint-types '("int" "str" "bool" "Set" "List"))
+(defconst quint-keywords '("Rec" "Tup" "not" "and" "or" "iff" "implies" "all" "any" "if" "else"))
+(defconst quint-declarations '("module" "import" "from" "export" "as" "const" "var" "def" "val" "pure"
+                               "nondet" "action" "temporal" "assume" "type"))
+(defconst quint-constants '("Bool" "Int" "Nat" "false" "true"))
+
+(defvar quint-font-lock-keywords
+  (append
+   `((,(regexp-opt quint-keywords 'symbols) . font-lock-keyword-face)
+     (,(regexp-opt quint-declarations 'symbols) . font-lock-keyword-face)
+     (,(regexp-opt quint-types 'symbols) . font-lock-type-face)
+     (,(regexp-opt quint-constants 'symbols) . font-lock-constant-face))
+
+   '(("\\<\\(?:def\\|action\\|run\\|temporal\\|pure\\|val\\)\\>\\s-+\\([a-zA-Z_][a-zA-Z0-9_]*\\)" 1 font-lock-function-name-face)
+     ("\\<module\\>\\s-+\\([a-zA-Z_][a-zA-Z0-9_]*\\)" 1 font-lock-constant-face))))
+
+(defvar quint-mode-syntax-table
+  (let ((st (make-syntax-table)))
+    ;; C-style comments: // and /* ... */
+    (modify-syntax-entry ?/ ". 124b" st)
+    (modify-syntax-entry ?* ". 23" st)
+    (modify-syntax-entry ?\n "> b" st)
+    st)
+  "Syntax table for `quint-mode'.")
+
+;;;###autoload
+(define-derived-mode quint-mode prog-mode "Quint"
+  "Major mode for the Quint specification language. https://github.com/informalsystems/quint/"
+  :syntax-table quint-mode-syntax-table
+  (setq-local font-lock-defaults '(quint-font-lock-keywords))
+  (setq-local comment-start "/* ")
+  (setq-local comment-end "*/ "))
+
+(defun bronen/close-all-buffers ()
+  (interactive)
+  (mapc 'kill-buffer (delete (current-buffer) (buffer-list))))

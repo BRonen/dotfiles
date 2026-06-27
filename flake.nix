@@ -6,7 +6,7 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
-    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+    nix-homebrew.url = "github:zhaofengli/nix-homebrew";
   };
 
   outputs = { self, nixpkgs, flake-utils, nix-darwin, nix-homebrew, home-manager } @ inputs:
@@ -44,7 +44,12 @@
           home-manager.darwinModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users."bronen" = import ./home-manager/yggdrasil.nix;
+            home-manager.users."bronen" = { ... }: {
+              home.username = "bronen";
+              home.homeDirectory = "/Users/bronen";
+
+              imports = [ ./home-manager/yggdrasil.nix ];
+            };
           }
         ];
       };
@@ -54,11 +59,6 @@
           pkgs = nixpkgs.legacyPackages.x86_64-linux;
           extraSpecialArgs = { inherit inputs outputs; };
           modules = [ ./home-manager/bronen.nix ];
-        };
-        "brenno.rodrigues@ubuntu" = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.x86_64-linux;
-          extraSpecialArgs = { inherit inputs outputs; };
-          modules = [ ./home-manager/brenno.rodrigues.nix ];
         };
       };
     } // flake-utils.lib.eachDefaultSystem (system:

@@ -64,3 +64,7 @@
   :recipe (:host github
            :repo "informalsystems/quint"
            :files ("editor-plugins/emacs/lsp-quint.el")))
+
+;; (package! lsp-vtsls
+;;   :recipe (:host github
+;; 	   :repo "sdvcrx/lsp-vtsls"))

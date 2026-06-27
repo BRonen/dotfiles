@@ -10,6 +10,7 @@
     defaultEditor = true;
     vimAlias = true;
     viAlias = true;
+    sideloadInitLua = true;
   };
 
   programs.git = {
@@ -21,7 +22,6 @@
   };
 
   xdg.configFile."ghostty/config".text = ''
-      theme = dark:catppuccin-latte,light:catppuccin-mocha
       command = /bin/zsh --login
       font-family = "MonaspiceKr Nerd Font Mono"
       window-decoration = false

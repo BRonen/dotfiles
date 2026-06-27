@@ -5,6 +5,7 @@
     
     brews = [
       "mas"
+      "ufbt"
     ];
 
     casks = [
@@ -15,8 +16,12 @@
       "raycast"
       "emacs-app"
       "orbstack"
-      "via"
       "ghostty"
+      "beekeeper-studio"
+      "claude-code"
+      "pgadmin4"
+      "gimp"
+      "rustdesk"
     ];
 
     masApps = {
@@ -29,12 +34,14 @@
 
   environment.systemPackages = with pkgs; [
     git
-    neovim
+    ripgrep
     fzf
     jq
+    fd
     wakatime-cli
     jet
-    neofetch
+    btop
+    fastfetch
     direnv
     nix-direnv
     aerospace
@@ -50,9 +57,9 @@
     
     settings = {
       config-version = 2;
-      
-      persistent-workspaces = ["1" "2" "3" "4" "5" "6" "7" "8" "9"];
-      
+
+      persistent-workspaces = ["1" "2" "3" "4" "5" "6" "7" "8" "9" "0"];
+
       gaps = {
         inner.horizontal = 0;
         inner.vertical   = 0;
@@ -63,9 +70,9 @@
       };
 
       mode.main.binding = {
-        "alt-d" = "layout floating tiling";
-        "alt-slash" = "layout tiles horizontal vertical";
-        "alt-comma" = "layout accordion horizontal vertical";
+        "alt-enter" = "layout floating tiling";
+        "alt-shift-slash" = "layout tiles horizontal vertical";
+        "alt-shift-comma" = "layout accordion horizontal vertical";
         "alt-h" = "focus left";
         "alt-j" = "focus down";
         "alt-k" = "focus up";
@@ -85,6 +92,7 @@
         "alt-7" = "workspace 7";
         "alt-8" = "workspace 8";
         "alt-9" = "workspace 9";
+        "alt-0" = "workspace 0";
         "alt-shift-1" = "move-node-to-workspace 1";
         "alt-shift-2" = "move-node-to-workspace 2";
         "alt-shift-3" = "move-node-to-workspace 3";
@@ -94,10 +102,10 @@
         "alt-shift-7" = "move-node-to-workspace 7";
         "alt-shift-8" = "move-node-to-workspace 8";
         "alt-shift-9" = "move-node-to-workspace 9";
+        "alt-shift-0" = "move-node-to-workspace 0";
         "alt-tab" = "workspace-back-and-forth";
         "alt-shift-tab" = "move-workspace-to-monitor --wrap-around next";
         "alt-shift-semicolon" = "mode service";
-        "alt-enter" = "exec-and-forget open -a Ghostty";
       };
 
       mode.service.binding = {
@@ -111,6 +119,20 @@
         }
         {
           "if".app-id = "com.apple.systempreferences";
+          "run" = "layout floating";
+        }
+        {
+          "if" = {
+            app-name-regex-substring = "Emacs";
+            window-title-regex-substring = "corfu";
+          };
+          "run" = "layout floating";
+        }
+        {
+          "if" = {
+            app-name-regex-substring = "Emacs";
+            window-title-regex-substring = "\([0-9]+ × [0-9]+\)";
+          };
           "run" = "layout floating";
         }
       ];
@@ -128,12 +150,13 @@
     enable = true;
 
     interactiveShellInit = ''
+      export FZF_BASE=/run/current-system/sw/bin/fzf
       export ZSH=${pkgs.oh-my-zsh}/share/oh-my-zsh/
       eval "$(direnv hook zsh)"
 
       # ZSH_THEME=""
 
-      plugins=(git node bun bgnotifier docker docker-compose emacs fzf gradle history macos npm themes xcode)
+      plugins=(git node bun bgnotify docker docker-compose emacs fzf gradle history macos npm themes xcode)
 
       source $ZSH/oh-my-zsh.sh
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
